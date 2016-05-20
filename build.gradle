@@ -1,0 +1,122 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url "http://dl.bintray.com/ramonza/gradle-plugins"
+        }
+        jcenter()
+    }
+    dependencies {
+        classpath "org.ajoberstar:grgit:1.3.0"
+        classpath "com.rhapsody.bi:gradle-bi-plugin:0.0.1"
+        classpath "cucumber.contrib.gradle:cucumber-gradle:0.2.0"
+        classpath "com.github.maiflai:gradle-scalatest:0.12"
+    }
+}
+
+plugins {
+    id "scala"
+    id "eclipse"
+    id "idea"
+    id "maven-publish"
+    id "nebula.provided-base" version "3.0.3"
+}
+
+apply plugin: "cucumber"
+apply plugin: "com.github.maiflai.scalatest"
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+def scalaMajor = "2.10"
+def scalaVersion = "2.10.4"
+
+ext {
+    git = org.ajoberstar.grgit.Grgit.open(currentDir: project.projectDir)
+    revision = git.head().id
+    gitVersion = git.describe().replaceFirst(/^(?i)v/, "")
+    testWorkingDir = new File(buildDir, "test-tmp")
+    hadoopVersion = "2.5.0-cdh5.3.2"
+}
+
+group = "com.rhapsody.bi"
+version = gitVersion
+description = "Spark SQL App"
+
+jar {
+    manifest {
+        attributes "Implementation-Title": description,
+                "Implementation-Version": revision
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://repository.cloudera.com/artifactory/cloudera-repos/" }
+    maven { url "http://maven01.internal.rhapsody.com/nexus/content/groups/public" }
+    maven { url "http://rds-repo-dev-1201.sea2.rhapsody.com:8080/nexus/content/groups/public" }
+    maven { url "http://rds-repo-dev-1201.sea2.rhapsody.com:8080/nexus/content/groups/public-snapshots" }
+}
+
+dependencies {
+    compile "com.github.scopt:scopt_2.10:3.3.0"
+    compile "com.typesafe.scala-logging:scala-logging-api_${scalaMajor}:2.1.2"
+    compile "com.typesafe.scala-logging:scala-logging-slf4j_${scalaMajor}:2.1.2"
+    compile "com.rhapsody.bi:hadoop-helper:0.0.1+"
+    compile "com.rhapsody.bi:spark-sql-ext:0.0.2+"
+    compile "com.rhapsody.bi:app-config:0.0.1+"
+
+    provided "org.apache.spark:spark-hive_$scalaMajor:rhap1.6.0"
+
+    testCompile "org.scalatest:scalatest_$scalaMajor:2.2.6"
+    testRuntime "org.pegdown:pegdown:1.1.0"
+
+    testCompile "org.scalacheck:scalacheck_$scalaMajor:1.12.5"
+
+    testCompile "info.cukes:cucumber-scala_$scalaMajor:1.2.4"
+    testCompile "info.cukes:cucumber-junit:1.2.4"
+}
+
+test.doFirst {
+    testWorkingDir.mkdirs()
+}
+
+test {
+    systemProperties "property": "value"
+    maxParallelForks = 1
+    workingDir testWorkingDir
+}
+
+task scalaDocJar(type: Jar, dependsOn: scaladoc) {
+    classifier = 'scaladoc'
+    from scaladoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task wrapper(type: Wrapper) { gradleVersion = "2.12" }
+
+publishing {
+    repositories {
+        maven {
+            name "rhapsody"
+            url "http://maven01.internal.rhapsody.com/nexus/content/repositories/releases"
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifact(scalaDocJar) {
+                classifier = 'scaladoc'
+            }
+            artifact(sourcesJar) {
+                classifier = 'sources'
+            }
+        }
+    }
+}
