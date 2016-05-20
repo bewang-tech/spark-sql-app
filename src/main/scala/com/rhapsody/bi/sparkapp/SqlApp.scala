@@ -13,7 +13,7 @@ trait SqlApp[APPOPT <: WithConfFile] extends LazyLogging {
 
   def parse(args: Array[String]): Option[APPOPT]
 
-  def confRoot: String
+  def confRoot(opt: APPOPT): String
 
   def createSqlContext = {
     val conf = new SparkConf()
@@ -36,7 +36,7 @@ trait SqlApp[APPOPT <: WithConfFile] extends LazyLogging {
       case None => ConfigFactory.load()
     }
 
-  def appConf(opt: APPOPT) = AppConfig(confRoot, loadConf(opt.confFile))
+  def appConf(opt: APPOPT) = AppConfig(confRoot(opt), loadConf(opt.confFile))
 
   def main(args: Array[String]) = {
     logger.info(s"The command line args: ${args.mkString(",")}")
