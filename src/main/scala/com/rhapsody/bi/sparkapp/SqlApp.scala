@@ -25,7 +25,7 @@ trait SqlApp[APPOPT <: WithConfFile] extends LazyLogging {
     sqlContext
   }
 
-  def initSql(sqlContext: SQLContext) = {
+  def initSql(sqlContext: SQLContext): Unit = {
     sqlContext.sql("set parquet.compression=gzip")
     sqlContext.sql("set hive.exec.dynamic.partition.mode=nonstrict")
   }
