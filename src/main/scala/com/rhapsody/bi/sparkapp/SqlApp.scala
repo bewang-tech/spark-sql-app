@@ -47,7 +47,7 @@ trait SqlApp[APPOPT <: WithConfFile] extends LazyLogging {
       val sqlContext = createSqlContext
       initSql(sqlContext)
 
-      val driver = createDriver(sqlContext, opt)
+      val driver = createDriver(opt)(sqlContext)
 
       logger.info(s"Running $driver ...")
 
