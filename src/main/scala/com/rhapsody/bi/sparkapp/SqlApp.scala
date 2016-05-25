@@ -9,7 +9,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 trait SqlApp[APPOPT <: WithConfFile] extends LazyLogging {
 
-  def createDriver(sqlContext: SQLContext, appOpt: APPOPT): Driver
+  def createDriver(appOpt: APPOPT)(implicit sqlContext: SQLContext): Driver
 
   def parse(args: Array[String]): Option[APPOPT]
 
@@ -30,13 +30,13 @@ trait SqlApp[APPOPT <: WithConfFile] extends LazyLogging {
     sqlContext.sql("set hive.exec.dynamic.partition.mode=nonstrict")
   }
 
-  def loadConf(confFile: Option[String]) =
+  def loadConfig(confFile: Option[String]) =
     confFile match {
       case Some(f) => ConfigFactory.load(f)
       case None => ConfigFactory.load()
     }
 
-  def appConf(opt: APPOPT) = AppConfig(confRoot(opt), loadConf(opt.confFile))
+  def appConfig(opt: APPOPT) = AppConfig(confRoot(opt), loadConfig(opt.confFile))
 
   def main(args: Array[String]) = {
     logger.info(s"The command line args: ${args.mkString(",")}")
