@@ -17,8 +17,6 @@ buildscript {
 
 plugins {
     id "scala"
-    id "eclipse"
-    id "idea"
     id "maven-publish"
     id "nebula.provided-base" version "3.0.3"
 }
@@ -68,9 +66,9 @@ dependencies {
     compile "com.github.scopt:scopt_2.10:3.3.0"
     compile "com.typesafe.scala-logging:scala-logging-api_${scalaMajor}:2.1.2"
     compile "com.typesafe.scala-logging:scala-logging-slf4j_${scalaMajor}:2.1.2"
-    compile "com.rhapsody.bi:hadoop-helper:0.0.1+"
+    compile "com.rhapsody.bi:hadoop-helper:0.0.2+"
     compile "com.rhapsody.bi:spark-sql-ext:0.0.2+"
-    compile "com.rhapsody.bi:app-config:0.0.1+"
+    compile "com.rhapsody.bi:app-config:0.0.2+"
     compile "com.rhapsody.bi:joda-helper:0.0.1+"
 
     compile "com.google.guava:guava:16.0.1"
@@ -118,6 +116,10 @@ publishing {
         maven {
             name "rhapsody"
             url "http://maven01.internal.rhapsody.com/nexus/content/repositories/releases"
+	    credentials {
+	      username "$mavenUser"
+	      password "$mavenPassword"
+	    }
         }
     }
     publications {
