@@ -1,33 +1,26 @@
-package com.rhapsody.bi.sparkapp
+package com.napster.bi.sparkapp
 
-import com.rhapsody.bi.config.AppConfig
+import com.napster.bi.config.AppConfig
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.slf4j.LazyLogging
-import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.hive.HiveContextEx
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.sql.SparkSession
 
 trait SqlApp[APPOPT <: WithConfFile] extends LazyLogging {
 
-  def createDriver(appOpt: APPOPT)(implicit sqlContext: SQLContext): Driver
+  def createDriver(appOpt: APPOPT)(implicit spark: SparkSession): Driver
 
   def parse(args: Array[String]): Option[APPOPT]
 
   def confRoot(opt: APPOPT): String
 
-  def createSqlContext = {
-    val conf = new SparkConf()
-    val sc = new SparkContext(conf)
+  def sparkSession =
+    SparkSession.builder()
+      .config("spark.sql.parquet.binaryAsString", "true")
+      .getOrCreate()
 
-    val sqlContext = new HiveContextEx(sc)
-    sqlContext.setConf("spark.sql.parquet.binaryAsString", "true")
-
-    sqlContext
-  }
-
-  def initSql(sqlContext: SQLContext): Unit = {
-    sqlContext.sql("set parquet.compression=gzip")
-    sqlContext.sql("set hive.exec.dynamic.partition.mode=nonstrict")
+  def initSql(spark: SparkSession): Unit = {
+    spark.sql("set parquet.compression=gzip")
+    spark.sql("set hive.exec.dynamic.partition.mode=nonstrict")
   }
 
   def loadConfig(confFile: Option[String]) =
@@ -44,10 +37,10 @@ trait SqlApp[APPOPT <: WithConfFile] extends LazyLogging {
     parse(args).map { opt =>
       logger.info(s"Application option = ${opt}")
 
-      val sqlContext = createSqlContext
-      initSql(sqlContext)
+      val spark = sparkSession
+      initSql(spark)
 
-      val driver = createDriver(opt)(sqlContext)
+      val driver = createDriver(opt)(spark)
 
       logger.info(s"Running $driver ...")
 

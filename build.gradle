@@ -27,8 +27,7 @@ apply plugin: "com.github.maiflai.scalatest"
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-def scalaMajor = "2.10"
-def scalaVersion = "2.10.4"
+def scalaMajor = "2.11"
 
 configurations {
     scripts
@@ -42,7 +41,7 @@ ext {
     hadoopVersion = "2.5.0-cdh5.3.2"
 }
 
-group = "com.rhapsody.bi"
+group = "com.napster.bi"
 version = gitVersion
 description = "Spark SQL App"
 
@@ -55,34 +54,29 @@ jar {
 
 repositories {
     maven { url "http://maven01.internal.rhapsody.com/nexus/content/groups/public" }
-    maven { url "http://rds-repo-dev-1201.sea2.rhapsody.com:8080/nexus/content/groups/public" }
 }
 
 dependencies {
-    compile "com.github.scopt:scopt_2.10:3.3.0"
+    compile "com.github.scopt:scopt_${scalaMajor}:3.3.0"
     compile "com.typesafe.scala-logging:scala-logging-api_${scalaMajor}:2.1.2"
     compile "com.typesafe.scala-logging:scala-logging-slf4j_${scalaMajor}:2.1.2"
-    compile "com.rhapsody.bi:hadoop-helper:0.0.2+"
-    compile "com.rhapsody.bi:spark-sql-ext:0.0.2+"
-    compile "com.rhapsody.bi:app-config:0.0.2+"
-    compile "com.rhapsody.bi:joda-helper:0.0.1+"
+
+    compile "joda-time:joda-time:2.9.3"
+    compile "org.joda:joda-convert:1.8.1"
+
+    // compile "com.napster.bi:app-config:0.1+"
+    compile project(":app-config")
 
     compile "com.google.guava:guava:16.0.1"
 
-    provided("org.apache.spark:spark-hive_$scalaMajor:rhap1.6.0") {
+    provided("org.apache.spark:spark-hive_${scalaMajor}:2.0.1-rhap") {
         exclude group: "com.google.guava", module: "guava"
     }
 
     scripts "com.rhapsody.bi:common-scripts:1.0.+:scripts@tgz"
 
-    testCompile "com.rhapsody.bi:sparktest-helper:0.0.1+"
-
+    testCompile "org.scalacheck:scalacheck_${scalaMajor}:1.12.5"
     testRuntime "org.pegdown:pegdown:1.1.0"
-
-    testCompile "org.scalacheck:scalacheck_$scalaMajor:1.12.5"
-
-    testCompile "info.cukes:cucumber-scala_$scalaMajor:1.2.4"
-    testCompile "info.cukes:cucumber-junit:1.2.4"
 }
 
 test.doFirst {
@@ -105,17 +99,17 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
 }
 
-task wrapper(type: Wrapper) { gradleVersion = "2.12" }
+task wrapper(type: Wrapper) { gradleVersion = "2.13" }
 
 publishing {
     repositories {
         maven {
             name "rhapsody"
             url "http://maven01.internal.rhapsody.com/nexus/content/repositories/releases"
-	    credentials {
-	      username "$mavenUser"
-	      password "$mavenPassword"
-	    }
+            credentials {
+                username "$mavenUser"
+                password "$mavenPassword"
+            }
         }
     }
     publications {

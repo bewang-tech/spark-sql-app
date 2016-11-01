@@ -1,4 +1,4 @@
-package com.rhapsody.bi.sparkapp
+package com.napster.bi.sparkapp
 
 import com.typesafe.scalalogging.slf4j.LazyLogging
 
