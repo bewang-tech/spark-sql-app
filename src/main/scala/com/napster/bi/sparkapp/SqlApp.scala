@@ -16,6 +16,7 @@ trait SqlApp[APPOPT <: WithConfFile] extends LazyLogging {
   def sparkSession =
     SparkSession.builder()
       .config("spark.sql.parquet.binaryAsString", "true")
+      .enableHiveSupport()
       .getOrCreate()
 
   def initSql(spark: SparkSession): Unit = {
