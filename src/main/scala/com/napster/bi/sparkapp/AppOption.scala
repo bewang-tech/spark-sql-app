@@ -27,6 +27,12 @@ trait AppOption[C] {
       .action(setToDate)
       .text("the end date of a date range [from, to] (inclusive).")
 
+  def date(setDate: SetOption[LocalDate]) =
+    opt[LocalDate]('d', "date")
+      .valueName("yyyy-MM-dd")
+      .action(setDate)
+      .text("the specifid date.")
+
   help("help").text("print this usage text")
 
 }
