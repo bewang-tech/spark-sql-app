@@ -1,0 +1,350 @@
+{
+    "compile": {
+        "com.github.scopt:scopt_2.11": {
+            "locked": "3.3.0",
+            "requested": "3.3.0"
+        },
+        "com.google.guava:guava": {
+            "locked": "16.0.1",
+            "requested": "16.0.1"
+        },
+        "com.napster.bi:app-config": {
+            "locked": "2.0.0-2-gef892d9",
+            "requested": "2.0.+"
+        },
+        "com.typesafe.scala-logging:scala-logging-api_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "joda-time:joda-time": {
+            "locked": "2.9.3",
+            "requested": "2.9.3"
+        },
+        "org.apache.spark:spark-hive_2.11": {
+            "locked": "2.0.1-rhap",
+            "requested": "2.0.1-rhap"
+        },
+        "org.joda:joda-convert": {
+            "locked": "1.8.1",
+            "requested": "1.8.1"
+        }
+    },
+    "compileClasspath": {
+        "com.github.scopt:scopt_2.11": {
+            "locked": "3.3.0",
+            "requested": "3.3.0"
+        },
+        "com.google.guava:guava": {
+            "locked": "16.0.1",
+            "requested": "16.0.1"
+        },
+        "com.napster.bi:app-config": {
+            "locked": "2.0.0-2-gef892d9",
+            "requested": "2.0.+"
+        },
+        "com.typesafe.scala-logging:scala-logging-api_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "joda-time:joda-time": {
+            "locked": "2.9.3",
+            "requested": "2.9.3"
+        },
+        "org.apache.spark:spark-hive_2.11": {
+            "locked": "2.0.1-rhap",
+            "requested": "2.0.1-rhap"
+        },
+        "org.joda:joda-convert": {
+            "locked": "1.8.1",
+            "requested": "1.8.1"
+        }
+    },
+    "compileOnly": {
+        "com.github.scopt:scopt_2.11": {
+            "locked": "3.3.0",
+            "requested": "3.3.0"
+        },
+        "com.google.guava:guava": {
+            "locked": "16.0.1",
+            "requested": "16.0.1"
+        },
+        "com.napster.bi:app-config": {
+            "locked": "2.0.0-2-gef892d9",
+            "requested": "2.0.+"
+        },
+        "com.typesafe.scala-logging:scala-logging-api_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "joda-time:joda-time": {
+            "locked": "2.9.3",
+            "requested": "2.9.3"
+        },
+        "org.apache.spark:spark-hive_2.11": {
+            "locked": "2.0.1-rhap",
+            "requested": "2.0.1-rhap"
+        },
+        "org.joda:joda-convert": {
+            "locked": "1.8.1",
+            "requested": "1.8.1"
+        }
+    },
+    "default": {
+        "com.github.scopt:scopt_2.11": {
+            "locked": "3.3.0",
+            "requested": "3.3.0"
+        },
+        "com.google.guava:guava": {
+            "locked": "16.0.1",
+            "requested": "16.0.1"
+        },
+        "com.napster.bi:app-config": {
+            "locked": "2.0.0-2-gef892d9",
+            "requested": "2.0.+"
+        },
+        "com.typesafe.scala-logging:scala-logging-api_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "joda-time:joda-time": {
+            "locked": "2.9.3",
+            "requested": "2.9.3"
+        },
+        "org.apache.spark:spark-hive_2.11": {
+            "project": true,
+            "requested": "2.0.1-rhap"
+        },
+        "org.joda:joda-convert": {
+            "locked": "1.8.1",
+            "requested": "1.8.1"
+        }
+    },
+    "provided": {
+        "org.apache.spark:spark-hive_2.11": {
+            "locked": "2.0.1-rhap",
+            "requested": "2.0.1-rhap"
+        }
+    },
+    "runtime": {
+        "com.github.scopt:scopt_2.11": {
+            "locked": "3.3.0",
+            "requested": "3.3.0"
+        },
+        "com.google.guava:guava": {
+            "locked": "16.0.1",
+            "requested": "16.0.1"
+        },
+        "com.napster.bi:app-config": {
+            "locked": "2.0.0-2-gef892d9",
+            "requested": "2.0.+"
+        },
+        "com.typesafe.scala-logging:scala-logging-api_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "joda-time:joda-time": {
+            "locked": "2.9.3",
+            "requested": "2.9.3"
+        },
+        "org.apache.spark:spark-hive_2.11": {
+            "locked": "2.0.1-rhap",
+            "requested": "2.0.1-rhap"
+        },
+        "org.joda:joda-convert": {
+            "locked": "1.8.1",
+            "requested": "1.8.1"
+        }
+    },
+    "testCompile": {
+        "com.github.scopt:scopt_2.11": {
+            "locked": "3.3.0",
+            "requested": "3.3.0"
+        },
+        "com.google.guava:guava": {
+            "locked": "16.0.1",
+            "requested": "16.0.1"
+        },
+        "com.napster.bi:app-config": {
+            "locked": "2.0.0-2-gef892d9",
+            "requested": "2.0.+"
+        },
+        "com.typesafe.scala-logging:scala-logging-api_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "joda-time:joda-time": {
+            "locked": "2.9.3",
+            "requested": "2.9.3"
+        },
+        "org.apache.spark:spark-hive_2.11": {
+            "locked": "2.0.1-rhap",
+            "requested": "2.0.1-rhap"
+        },
+        "org.joda:joda-convert": {
+            "locked": "1.8.1",
+            "requested": "1.8.1"
+        },
+        "org.scalacheck:scalacheck_2.11": {
+            "locked": "1.13.4",
+            "requested": "1.13.4"
+        },
+        "org.scalatest:scalatest_2.11": {
+            "locked": "3.0.1",
+            "requested": "3.0.1"
+        }
+    },
+    "testCompileClasspath": {
+        "com.github.scopt:scopt_2.11": {
+            "locked": "3.3.0",
+            "requested": "3.3.0"
+        },
+        "com.google.guava:guava": {
+            "locked": "16.0.1",
+            "requested": "16.0.1"
+        },
+        "com.napster.bi:app-config": {
+            "locked": "2.0.0-2-gef892d9",
+            "requested": "2.0.+"
+        },
+        "com.typesafe.scala-logging:scala-logging-api_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "joda-time:joda-time": {
+            "locked": "2.9.3",
+            "requested": "2.9.3"
+        },
+        "org.apache.spark:spark-hive_2.11": {
+            "locked": "2.0.1-rhap",
+            "requested": "2.0.1-rhap"
+        },
+        "org.joda:joda-convert": {
+            "locked": "1.8.1",
+            "requested": "1.8.1"
+        },
+        "org.scalacheck:scalacheck_2.11": {
+            "locked": "1.13.4",
+            "requested": "1.13.4"
+        },
+        "org.scalatest:scalatest_2.11": {
+            "locked": "3.0.1",
+            "requested": "3.0.1"
+        }
+    },
+    "testCompileOnly": {
+        "com.github.scopt:scopt_2.11": {
+            "locked": "3.3.0",
+            "requested": "3.3.0"
+        },
+        "com.google.guava:guava": {
+            "locked": "16.0.1",
+            "requested": "16.0.1"
+        },
+        "com.napster.bi:app-config": {
+            "locked": "2.0.0-2-gef892d9",
+            "requested": "2.0.+"
+        },
+        "com.typesafe.scala-logging:scala-logging-api_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "joda-time:joda-time": {
+            "locked": "2.9.3",
+            "requested": "2.9.3"
+        },
+        "org.apache.spark:spark-hive_2.11": {
+            "locked": "2.0.1-rhap",
+            "requested": "2.0.1-rhap"
+        },
+        "org.joda:joda-convert": {
+            "locked": "1.8.1",
+            "requested": "1.8.1"
+        },
+        "org.scalacheck:scalacheck_2.11": {
+            "locked": "1.13.4",
+            "requested": "1.13.4"
+        },
+        "org.scalatest:scalatest_2.11": {
+            "locked": "3.0.1",
+            "requested": "3.0.1"
+        }
+    },
+    "testRuntime": {
+        "com.github.scopt:scopt_2.11": {
+            "locked": "3.3.0",
+            "requested": "3.3.0"
+        },
+        "com.google.guava:guava": {
+            "locked": "16.0.1",
+            "requested": "16.0.1"
+        },
+        "com.napster.bi:app-config": {
+            "locked": "2.0.0-2-gef892d9",
+            "requested": "2.0.+"
+        },
+        "com.typesafe.scala-logging:scala-logging-api_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
+            "locked": "2.1.2",
+            "requested": "2.1.2"
+        },
+        "joda-time:joda-time": {
+            "locked": "2.9.3",
+            "requested": "2.9.3"
+        },
+        "org.apache.spark:spark-hive_2.11": {
+            "locked": "2.0.1-rhap",
+            "requested": "2.0.1-rhap"
+        },
+        "org.joda:joda-convert": {
+            "locked": "1.8.1",
+            "requested": "1.8.1"
+        },
+        "org.pegdown:pegdown": {
+            "locked": "1.4.2",
+            "requested": "1.4.2"
+        },
+        "org.scalacheck:scalacheck_2.11": {
+            "locked": "1.13.4",
+            "requested": "1.13.4"
+        },
+        "org.scalatest:scalatest_2.11": {
+            "locked": "3.0.1",
+            "requested": "3.0.1"
+        }
+    }
+}
