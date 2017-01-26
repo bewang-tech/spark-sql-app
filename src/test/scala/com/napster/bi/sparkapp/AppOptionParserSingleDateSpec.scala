@@ -3,14 +3,14 @@ package com.napster.bi.sparkapp
 import org.joda.time.LocalDate
 import org.scalatest.{Matchers, WordSpec}
 
-class AppOptionSingleDateSpec extends WordSpec with Matchers {
+class AppOptionParserSingleDateSpec extends WordSpec with Matchers {
 
   "AppOption" should {
 
     "allow the app has an optional date as parameter" when {
       case class CmdLineOption(date: Option[LocalDate] = None)
 
-      val parser = new scopt.OptionParser[CmdLineOption]("test-app") with AppOption[CmdLineOption] {
+      val parser = new scopt.OptionParser[CmdLineOption]("test-app") with AppOptionParser[CmdLineOption] {
         date { (d, c) => c.copy(date = Some(d)) }
       }
 

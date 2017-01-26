@@ -3,9 +3,12 @@ package com.napster.bi.sparkapp
 import com.napster.bi.config.AppConfig
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 
-trait SqlApp[APPOPT <: WithConfFile] extends LazyLogging {
+trait SqlApp[APPOPT <: AppOption] extends LazyLogging {
+
+  import SqlApp._
 
   def createDriver(appOpt: APPOPT)(implicit spark: SparkSession): Driver
 
@@ -13,11 +16,18 @@ trait SqlApp[APPOPT <: WithConfFile] extends LazyLogging {
 
   def confRoot(opt: APPOPT): String
 
-  def sparkSession =
+  def sparkSession(opt: APPOPT) = {
+    val sparkConf = new SparkConf()
+    if (!sparkConf.contains(SPARK_APP_NAME) && !opt.appName.isEmpty) {
+      sparkConf.set(SPARK_APP_NAME, opt.appName.get)
+    }
+
     SparkSession.builder()
+      .config(sparkConf)
       .config("spark.sql.parquet.binaryAsString", "true")
       .enableHiveSupport()
       .getOrCreate()
+  }
 
   def initSql(spark: SparkSession): Unit = {
     spark.sql("set parquet.compression=gzip")
@@ -38,7 +48,7 @@ trait SqlApp[APPOPT <: WithConfFile] extends LazyLogging {
     parse(args).map { opt =>
       logger.info(s"Application option = ${opt}")
 
-      val spark = sparkSession
+      val spark = sparkSession(opt)
       initSql(spark)
 
       val driver = createDriver(opt)(spark)
@@ -52,5 +62,11 @@ trait SqlApp[APPOPT <: WithConfFile] extends LazyLogging {
       throw new IllegalArgumentException(s"Cannot parse command line: ${args.mkString(",")}")
     }
   }
+
+}
+
+object SqlApp {
+
+  val SPARK_APP_NAME = "spark.app.name"
 
 }
