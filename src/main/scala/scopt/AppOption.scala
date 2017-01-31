@@ -19,7 +19,7 @@ trait AppOption extends Dynamic {
 
 object AppOption {
 
-  case class Value(name: String, path: String, value: Any) extends AppOption {
+  case class Value(path: String, value: Any) extends AppOption {
 
     def as[T] = value.asInstanceOf[T]
 
@@ -28,11 +28,11 @@ object AppOption {
     override def apply(name: String): AppOption =
       throw new UnsupportedOperationException(s"${path} is a value.")
 
-    override def toString = s"$name=$value"
+    override def toString = value.toString
 
   }
 
-  case class NonExistValue(name: String, path: String) extends AppOption {
+  case class NonExistValue(path: String) extends AppOption {
     def as[T] =
       throw new NoSuchElementException(s"$path doesn't exist")
 
@@ -41,10 +41,10 @@ object AppOption {
     override def apply(name: String): AppOption =
       throw new NoSuchElementException(s"$path doesn't exist")
 
-    override def toString = s"$name=None"
+    override def toString = "None"
   }
 
-  case class Container(name: String, path: String) extends AppOption {
+  case class Container(path: String) extends AppOption {
 
     private[this] val _options = collection.mutable.Map[String, AppOption]()
 
@@ -57,7 +57,7 @@ object AppOption {
       _options.put(name, value)
 
     override def apply(name: String): AppOption =
-      _options.getOrElse(name, NonExistValue(name, s"${path}.${name}"))
+      _options.getOrElse(name, NonExistValue(s"${path}.${name}"))
 
     override def toString = _options.toString
 
@@ -86,8 +86,8 @@ object AppOption {
 
     // abstract override def parse(args: Seq[String], initConf: AppOption): Option[AppOption] = {
     def parseCommandLine(args: Seq[String]): Option[AppOption] = {
-      val initConf = Container(self.programName, "$")
-      initConf.put("_app", Value("_app", "$._app", self.programName))
+      val initConf = Container("$")
+      initConf.put("_app", Value("$._app", self.programName))
 
       val cache = collection.mutable.Map[Int, AppOption]()
 
@@ -105,16 +105,16 @@ object AppOption {
         val childPath = s"${c.path}.${o.name}"
         if (o.kind == Cmd) {
           // set the selected command
-          c.put("_cmd", Value("_cmd", s"${c.path}._cmd", o.name))
+          c.put("_cmd", Value(s"${c.path}._cmd", o.name))
 
           // create a nested AppOption to store the options for the command
-          val cmdConf = Container(o.name, childPath)
+          val cmdConf = Container(childPath)
           c.put(o.name, cmdConf)
 
           // cache the AppOption of the command
           cache.put(o.id, cmdConf)
         } else {
-          c.put(o.name, Value(o.name, childPath, x))
+          c.put(o.name, Value(childPath, x))
         }
 
         // always initConf so that the updated initConf will be returned by `parser.parse(args, initConf)`
