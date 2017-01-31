@@ -11,11 +11,20 @@ trait SqlApp extends LazyLogging {
 
   import SqlApp._
 
-  def createDriver(appOpt: AppOption, sessionWithName: Option[String] => SparkSession): Driver
+  def appOptionHandler(appOption: AppOption): AppOptionHandler
+
+  def createDriver(appOpt: AppOption): Driver = {
+    val handler = appOptionHandler(appOpt)
+
+    val spark = sparkSession(handler.appNameGen)
+    initSql(spark)
+
+    handler.createDriver(spark)
+  }
 
   def parse(args: Array[String]): Option[AppOption]
 
-  def createSession(defaultAppName: Option[String] = None): SparkSession = {
+  def sparkSession(defaultAppName: => Option[String]): SparkSession = {
     val sparkConf = new SparkConf()
     for (name <- sparkConf.getOption(SPARK_APP_NAME).orElse(defaultAppName)) {
       sparkConf.set(SPARK_APP_NAME, name)
@@ -26,8 +35,6 @@ trait SqlApp extends LazyLogging {
       .config("spark.sql.parquet.binaryAsString", "true")
       .enableHiveSupport()
       .getOrCreate()
-
-    initSql(spark)
 
     spark
   }
@@ -50,7 +57,7 @@ trait SqlApp extends LazyLogging {
     parse(args).map { appOpt =>
       logger.info(s"Application option = ${appOpt}")
 
-      val driver = createDriver(appOpt, createSession _)
+      val driver = createDriver(appOpt)
 
       logger.info(s"Running $driver ...")
 
@@ -67,5 +74,13 @@ trait SqlApp extends LazyLogging {
 object SqlApp {
 
   val SPARK_APP_NAME = "spark.app.name"
+
+  trait AppOptionHandler {
+
+    def appNameGen: () => Option[String]
+
+    def createDriver(spark: SparkSession): Driver
+
+  }
 
 }
