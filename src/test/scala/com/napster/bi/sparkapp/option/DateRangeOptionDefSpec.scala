@@ -13,8 +13,8 @@ class DateRangeOptionDefSpec extends WordSpec with Matchers {
       val parser = new scopt.OptionParser[CmdLineOption]("test-app") with DateOptionDef[CmdLineOption] {
         range(inclusive(from), inclusive(to)) {
           case (f, t) =>
-            (f action { (d, c) => c.copy(toDate = Some(d)) },
-              t action { (d, c) => c.copy(fromDate = Some(d)) })
+            (f action { (d, c) => c.copy(fromDate = Some(d)) },
+              t action { (d, c) => c.copy(toDate = Some(d)) })
         }
       }
 
