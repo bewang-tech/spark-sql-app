@@ -77,7 +77,7 @@ object SqlApp {
 
   trait AppOptionHandler {
 
-    def appNameGen: () => Option[String]
+    def appNameGen: Option[String]
 
     def createDriver(spark: SparkSession): Driver
 
