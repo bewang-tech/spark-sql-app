@@ -43,7 +43,7 @@ repositories {
 }
 
 dependencies {
-    compile "com.github.scopt:scopt_${scalaMajor}:3.3.0"
+    compile "com.github.scopt:scopt_${scalaMajor}:3.5.0"
     compile "com.typesafe.scala-logging:scala-logging-api_${scalaMajor}:2.1.2"
     compile "com.typesafe.scala-logging:scala-logging-slf4j_${scalaMajor}:2.1.2"
 
