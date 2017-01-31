@@ -32,18 +32,17 @@ trait DateOptionDef[C] {
     *
     * @param lower the option for the range's start date
     * @param upper the option for the range's end date
-    * @return
+    *
+    * @return a tuple (fromOptionDef, toOptionDef)
     */
-  def range(lower: RangeEnd, upper: RangeEnd)(transform: RangeOptionDef => RangeOptionDef) = {
+  def range(lower: RangeEnd, upper: RangeEnd) = {
     val open = symbols("lower")(lower.bound)
     val close = symbols("upper")(upper.bound)
 
     def desc(re: RangeEnd) = s"the ${re.end} date (${re.bound}) of range ${open}${lower.end},${upper.end}${close}"
 
-    transform(
-      date(lower.name, lower.short, desc(lower)),
-      date(upper.name, upper.short, desc(upper))
-    )
+    (date(lower.name, lower.short, desc(lower)),
+      date(upper.name, upper.short, desc(upper)))
   }
 
   def inclusive(rangeEnd: RangeEnd) = rangeEnd.copy(bound = Bound.inclusive)
