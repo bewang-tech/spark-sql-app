@@ -32,7 +32,6 @@ trait DateOptionDef[C] {
     *
     * @param lower the option for the range's start date
     * @param upper the option for the range's end date
-    *
     * @return a tuple (fromOptionDef, toOptionDef)
     */
   def range(lower: RangeEnd, upper: RangeEnd) = {
@@ -41,7 +40,7 @@ trait DateOptionDef[C] {
 
     def desc(re: RangeEnd) = s"the ${re.end} date (${re.bound}) of range ${open}${lower.end},${upper.end}${close}"
 
-    (date(lower.name, lower.short, desc(lower)),
+    Seq(date(lower.name, lower.short, desc(lower)),
       date(upper.name, upper.short, desc(upper)))
   }
 
