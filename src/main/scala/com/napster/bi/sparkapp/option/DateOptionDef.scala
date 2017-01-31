@@ -22,7 +22,7 @@ trait DateOptionDef[C] {
            desc: String = "the specified date.") =
     short.map(x => opt[LocalDate](x, name))
       .getOrElse(opt[LocalDate](name))
-      .valueName("yyyy-MM-dd")
+      .valueName("<yyyy-MM-dd>")
       .text(desc)
 
   type RangeOptionDef = (OptionDef[LocalDate, C], OptionDef[LocalDate, C])
@@ -38,11 +38,11 @@ trait DateOptionDef[C] {
     val open = symbols("lower")(lower.bound)
     val close = symbols("upper")(upper.bound)
 
-    def desc(end: String) = s"the ${end} date of range ${open}${lower.name},${upper.end}${close}"
+    def desc(re: RangeEnd) = s"the ${re.end} date (${re.bound}) of range ${open}${lower.end},${upper.end}${close}"
 
     transform(
-      date(lower.name, lower.short, desc(lower.end)),
-      date(upper.name, upper.short, desc(upper.end))
+      date(lower.name, lower.short, desc(lower)),
+      date(upper.name, upper.short, desc(upper))
     )
   }
 
