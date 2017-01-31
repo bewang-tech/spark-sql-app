@@ -7,27 +7,29 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import scopt.AppOption
 
-trait SqlApp[APPOPT] extends LazyLogging {
+trait SqlApp extends LazyLogging {
 
   import SqlApp._
 
-  def createDriver(appOpt: APPOPT)(implicit spark: SparkSession): Driver
+  def createDriver(appOpt: AppOption, sessionWithName: Option[String] => SparkSession): Driver
 
-  def parse(args: Array[String]): Option[APPOPT]
+  def parse(args: Array[String]): Option[AppOption]
 
-  def confRoot(opt: AppOption.Node): String
-
-  def sparkSession(defaultAppName: Option[String] = None) = {
+  def createSession(defaultAppName: Option[String] = None): SparkSession = {
     val sparkConf = new SparkConf()
     for (name <- sparkConf.getOption(SPARK_APP_NAME).orElse(defaultAppName)) {
       sparkConf.set(SPARK_APP_NAME, name)
     }
 
-    SparkSession.builder()
+    val spark = SparkSession.builder()
       .config(sparkConf)
       .config("spark.sql.parquet.binaryAsString", "true")
       .enableHiveSupport()
       .getOrCreate()
+
+    initSql(spark)
+
+    spark
   }
 
   def initSql(spark: SparkSession): Unit = {
@@ -35,26 +37,20 @@ trait SqlApp[APPOPT] extends LazyLogging {
     spark.sql("set hive.exec.dynamic.partition.mode=nonstrict")
   }
 
-  def loadConfig(confFile: Option[String]) =
-    confFile match {
-      case Some(f) => ConfigFactory.load(f)
-      case None => ConfigFactory.load()
-    }
-
-  def appConfig(opt: APPOPT) =
-    AppConfig(confRoot(opt),
-      opt.confFile.asOption[String].map(loadConfig(_)).getOrElse(loadConfig()))
+  def appConfig(appOption: AppOption) = {
+    val config = appOption("app-conf").asOption[String]
+      .map(confFile => ConfigFactory.load(confFile))
+      .getOrElse(ConfigFactory.load())
+    AppConfig(appOption._app, config)
+  }
 
   def main(args: Array[String]) = {
     logger.info(s"The command line args: ${args.mkString(",")}")
 
-    parse(args).map { opt =>
-      logger.info(s"Application option = ${opt}")
+    parse(args).map { appOpt =>
+      logger.info(s"Application option = ${appOpt}")
 
-      val spark = sparkSession(opt)
-      initSql(spark)
-
-      val driver = createDriver(opt)(spark)
+      val driver = createDriver(appOpt, createSession _)
 
       logger.info(s"Running $driver ...")
 
