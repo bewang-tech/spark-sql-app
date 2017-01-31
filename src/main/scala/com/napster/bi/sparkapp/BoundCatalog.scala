@@ -5,25 +5,25 @@ import org.apache.spark.sql._
 
 trait BoundCatalog {
 
-  def table(name: String): String
+  def tableName(alias: String): String
 
-  def read(name: String): DataFrame
+  def readTable(alias: String): DataFrame
 
 }
 
 class ConfigBoundCatalog(config: Config)(implicit spark: SparkSession) extends BoundCatalog {
 
-  override def table(name: String) = config.getString(name)
+  override def tableName(alias: String) = config.getString(alias)
 
-  override def read(name: String) = spark.read.table(table(name))
+  override def readTable(alias: String) = spark.read.table(tableName(alias))
 
 }
 
 class MapBoundCatalog(tableMap: Map[String, String])(implicit spark: SparkSession) extends BoundCatalog {
 
-  override def table(name: String) = tableMap(name)
+  override def tableName(alias: String) = tableMap(alias)
 
-  override def read(name: String) = spark.read.table(table(name))
+  override def readTable(alias: String) = spark.read.table(tableName(alias))
 
 }
 

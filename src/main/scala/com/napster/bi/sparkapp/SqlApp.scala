@@ -5,8 +5,9 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
+import scopt.AppOption
 
-trait SqlApp[APPOPT <: AppOption] extends LazyLogging {
+trait SqlApp[APPOPT] extends LazyLogging {
 
   import SqlApp._
 
@@ -14,12 +15,12 @@ trait SqlApp[APPOPT <: AppOption] extends LazyLogging {
 
   def parse(args: Array[String]): Option[APPOPT]
 
-  def confRoot(opt: APPOPT): String
+  def confRoot(opt: AppOption.Node): String
 
-  def sparkSession(opt: APPOPT) = {
+  def sparkSession(defaultAppName: Option[String] = None) = {
     val sparkConf = new SparkConf()
-    if (!sparkConf.contains(SPARK_APP_NAME) && !opt.appName.isEmpty) {
-      sparkConf.set(SPARK_APP_NAME, opt.appName.get)
+    for (name <- sparkConf.getOption(SPARK_APP_NAME).orElse(defaultAppName)) {
+      sparkConf.set(SPARK_APP_NAME, name)
     }
 
     SparkSession.builder()
@@ -40,7 +41,9 @@ trait SqlApp[APPOPT <: AppOption] extends LazyLogging {
       case None => ConfigFactory.load()
     }
 
-  def appConfig(opt: APPOPT) = AppConfig(confRoot(opt), loadConfig(opt.confFile))
+  def appConfig(opt: APPOPT) =
+    AppConfig(confRoot(opt),
+      opt.confFile.asOption[String].map(loadConfig(_)).getOrElse(loadConfig()))
 
   def main(args: Array[String]) = {
     logger.info(s"The command line args: ${args.mkString(",")}")
