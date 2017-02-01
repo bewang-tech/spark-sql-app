@@ -9,12 +9,15 @@ class AppOptionParserSpec extends WordSpec with Matchers {
 
     val parser: AppOption.Parser
 
+    def appOptionOf(args: String*) = parser.parseCommandLine(args)
+
     def parse(args: String*)(validate: AppOption => Unit) =
-      parser.parseCommandLine(args).map { appOption =>
+      appOptionOf(args: _*).map { appOption =>
         validate(appOption)
       } orElse {
         fail(s"failed to parse the arguments '${args.mkString(" ")}")
       }
+
   }
 
   "AppOption.Parser" should {
@@ -46,7 +49,6 @@ class AppOptionParserSpec extends WordSpec with Matchers {
           }
         }
       }
-
     }
     "allow to retrieve the option value" which {
       "is a global option" in {
@@ -73,6 +75,34 @@ class AppOptionParserSpec extends WordSpec with Matchers {
           parse("cmd_a", "--data", "15") { appOpt =>
             appOpt.cmd_a.data.as[Int] should be(15)
           }
+        }
+      }
+    }
+    "allow a command's checkConfig using relative AppOption to the command" when {
+      trait FailureTest extends Test {
+        val parser = new scopt.OptionParser[AppOption]("testapp") with AppOption.Parser {
+          cmd("cmd_c")
+            .text("do something about c")
+            .children(
+              opt[Int]("lower") valueName ("<int>") text "lower bound",
+              opt[Int]("upper") valueName ("<int>") text "upper bound",
+              checkConfig { cmdOpt =>
+                def lowerLessThanUpper(lower: Int, upper: Int) =
+                  if (lower < upper) success else failure(s"$lower is not less then $upper")
+
+                lowerLessThanUpper(cmdOpt.lower, cmdOpt.upper)
+              }
+            )
+        }
+      }
+      "given arguments fail the check, should fail the parsing" in {
+        new FailureTest {
+          appOptionOf("cmd_c", "--lower", "100", "--upper", "1") should be(None)
+        }
+      }
+      "the required args are not provided" in {
+        new FailureTest {
+          appOptionOf("cmd_a", "--data", "15") should be(None)
         }
       }
     }

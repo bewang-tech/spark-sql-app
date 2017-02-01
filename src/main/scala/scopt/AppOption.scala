@@ -13,6 +13,8 @@ trait AppOption extends Dynamic {
 
   def asOption[T]: Option[T]
 
+  def exists: Boolean = true
+
   def selectDynamic(name: String): AppOption = apply(name)
 }
 
@@ -37,6 +39,8 @@ object AppOption {
       throw new NoSuchElementException(s"$path doesn't exist")
 
     def asOption[T] = None
+
+    override def exists = false
 
     override def apply(name: String): AppOption =
       throw new NoSuchElementException(s"$path doesn't exist")
@@ -113,7 +117,7 @@ object AppOption {
 
           // cache the AppOption of the command
           cache.put(o.id, cmdConf)
-        } else {
+        } else if (o.kind == Opt) {
           c.put(o.name, Value(childPath, x))
         }
 
@@ -121,8 +125,39 @@ object AppOption {
         initConf
       }
 
+      def pathOf(id: Int): String =
+        options.find(_.id == id).map { o =>
+          val parentPath = o.getParentId.map(parentId => pathOf(parentId)).getOrElse("$")
+          s"${parentPath}.${o.name}"
+        }.getOrElse(s"non_exist_option($id)")
+
+      def withScope(parentId: Option[Int],
+                 f: AppOption => Either[String, Unit])(appOption: AppOption) = {
+        parentId.map { pid =>
+          val path = pathOf(pid)
+          cache.get(pid) map { scope =>
+            f(scope) match {
+              case Right(_) => success
+              case Left(msg) => failure(s"$path check failed: $msg")
+            }
+          } getOrElse {
+            failure(s"Cannot find the option for the checkConfig of $path")
+          }
+        } getOrElse (f(appOption))
+      }
+
       // inject the action using the default function.
       options.foreach(o => o.action(save(o) _))
+
+      // replace a check's validatioin function using its parent's AppOption
+      checks.filter(_.hasParent)
+        .map(_.asInstanceOf[OptionDef[Unit, AppOption]])
+        .foreach { check =>
+          val scopedCheck = check.copy(_configValidations = Seq())
+          check.checks.foreach { f =>
+            scopedCheck.validateConfig(withScope(check.getParentId, f) _)
+          }
+        }
 
       self.parse(args, initConf)
     }
