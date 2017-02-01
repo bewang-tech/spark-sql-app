@@ -88,6 +88,9 @@ object AppOption {
 
     help("help").text("print this usage")
 
+    def mustHaveCommand(appOption: AppOption) =
+      if (appOption._cmd.exists) success else failure("No command is specified.")
+
     // abstract override def parse(args: Seq[String], initConf: AppOption): Option[AppOption] = {
     def parseCommandLine(args: Seq[String]): Option[AppOption] = {
       val initConf = Container("$")
@@ -151,7 +154,8 @@ object AppOption {
       }
 
       // inject the action using the default function.
-      options.foreach(o => o.action(save(o) _))
+      options.filter(o => o.kind == Opt || o.kind == Cmd)
+        .foreach(o => o.action(save(o) _))
 
       // replace a check's validatioin function using its parent's AppOption
       checks.filter(_.hasParent)
