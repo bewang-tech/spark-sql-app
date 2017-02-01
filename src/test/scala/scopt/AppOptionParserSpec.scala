@@ -85,7 +85,8 @@ class AppOptionParserSpec extends WordSpec with Matchers {
             .text("do something about c")
             .children(
               opt[Int]("lower") valueName ("<int>") text "lower bound",
-              opt[Int]("upper") valueName ("<int>") text "upper bound",
+              opt[Int]("upper") valueName ("<int>") text "upper bound")
+            .children(
               checkConfig { cmdOpt =>
                 def lowerLessThanUpper(lower: Int, upper: Int) =
                   if (lower < upper) success else failure(s"$lower is not less then $upper")
@@ -96,9 +97,7 @@ class AppOptionParserSpec extends WordSpec with Matchers {
 
           cmd("cmd_d")
 
-          checkConfig { appOpt =>
-            if (appOpt._cmd.exists) success else failure("No command is specified")
-          }
+          checkConfig(mustHaveCommand)
         }
       }
       "given arguments fail the check, should fail the parsing" in {

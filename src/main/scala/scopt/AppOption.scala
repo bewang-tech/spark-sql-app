@@ -88,71 +88,67 @@ object AppOption {
 
     help("help").text("print this usage")
 
+    val cache = collection.mutable.Map[Int, AppOption]()
+
+    def pathOf(id: Int): String =
+      options.find(_.id == id).map { o =>
+        val parentPath = o.getParentId.map(parentId => pathOf(parentId)).getOrElse("$")
+        s"${parentPath}.${o.name}"
+      }.getOrElse(s"non_exist_option($id)")
+
+    def scopedCheck(check: OptionDef[Unit, AppOption]) = {
+      val parentId = check.getParentId.get
+      val path = pathOf(parentId)
+      val scopedCheck = check.copy(_configValidations = Seq())
+
+      def withScope(f: AppOption => Either[String, Unit])(appOption: AppOption) =
+        cache.get(parentId) map { scope =>
+          f(scope) match {
+            case Right(_) => success
+            case Left(msg) => failure(s"$path check failed: $msg")
+          }
+        } getOrElse success
+
+      check.checks.foreach { f =>
+        scopedCheck.validateConfig(withScope(f))
+      }
+    }
+
+    // default action: save the option value into AppOption
+    def save(o: OptionDef[_, AppOption])(x: Any, root: AppOption) = {
+      val c = containerOf(o).getOrElse(root).asInstanceOf[Container]
+      val childPath = s"${c.path}.${o.name}"
+      if (o.kind == Cmd) {
+        // set the selected command
+        c.put("_cmd", Value(s"${c.path}._cmd", o.name))
+
+        // create a nested AppOption to store the options for the command
+        val cmdConf = Container(childPath)
+        c.put(o.name, cmdConf)
+
+        // cache the AppOption of the command
+        cache.put(o.id, cmdConf)
+      } else if (o.kind == Opt) {
+        c.put(o.name, Value(childPath, x))
+      }
+
+      // always initConf so that the updated initConf will be returned by `parser.parse(args, initConf)`
+      root
+    }
+
+    /** Get the container AppOption of the given OptionDef resides.
+      * The container is in the cache keyed by the parent id of the OptionDef.
+      * If no parent, the option is in the top level, return initConf
+      * */
+    def containerOf(o: OptionDef[_, AppOption]): Option[AppOption] =
+      o.getParentId.flatMap(pid => cache.get(pid))
+
     def mustHaveCommand(appOption: AppOption) =
       if (appOption._cmd.exists) success else failure("No command is specified.")
 
-    // abstract override def parse(args: Seq[String], initConf: AppOption): Option[AppOption] = {
-    def parseCommandLine(args: Seq[String]): Option[AppOption] = {
-      val initConf = Container("$")
-      initConf.put("_app", Value("$._app", self.programName))
+    private[this] var _initialized = false
 
-      val cache = collection.mutable.Map[Int, AppOption]()
-
-      // Get the container AppOption of the given OptionDef resides.
-      // The container is in the cache keyed by the parent id of the OptionDef.
-      // If no parent, the option is in the top level, return initConf
-      def containerOf(o: OptionDef[_, AppOption]): Container = {
-        o.getParentId.flatMap(pid => cache.get(pid))
-          .map(_.asInstanceOf[Container]).getOrElse(initConf)
-      }
-
-      // default action: save the option value into AppOption
-      def save(o: OptionDef[_, AppOption])(x: Any, in: AppOption) = {
-        val c = containerOf(o)
-        val childPath = s"${c.path}.${o.name}"
-        if (o.kind == Cmd) {
-          // set the selected command
-          c.put("_cmd", Value(s"${c.path}._cmd", o.name))
-
-          // create a nested AppOption to store the options for the command
-          val cmdConf = Container(childPath)
-          c.put(o.name, cmdConf)
-
-          // cache the AppOption of the command
-          cache.put(o.id, cmdConf)
-        } else if (o.kind == Opt) {
-          c.put(o.name, Value(childPath, x))
-        }
-
-        // always initConf so that the updated initConf will be returned by `parser.parse(args, initConf)`
-        initConf
-      }
-
-      def pathOf(id: Int): String =
-        options.find(_.id == id).map { o =>
-          val parentPath = o.getParentId.map(parentId => pathOf(parentId)).getOrElse("$")
-          s"${parentPath}.${o.name}"
-        }.getOrElse(s"non_exist_option($id)")
-
-
-      def scopedCheck(check: OptionDef[Unit, AppOption]) = {
-        val parentId = check.getParentId.get
-        val path = pathOf(parentId)
-        val scopedCheck = check.copy(_configValidations = Seq())
-
-        def withScope(f: AppOption => Either[String, Unit])(appOption: AppOption) =
-          cache.get(parentId) map { scope =>
-            f(scope) match {
-              case Right(_) => success
-              case Left(msg) => failure(s"$path check failed: $msg")
-            }
-          } getOrElse success
-
-        check.checks.foreach { f =>
-          scopedCheck.validateConfig(withScope(f))
-        }
-      }
-
+    def initialize = {
       // inject the action using the default function.
       options.filter(o => o.kind == Opt || o.kind == Cmd)
         .foreach(o => o.action(save(o) _))
@@ -161,6 +157,16 @@ object AppOption {
       checks.filter(_.hasParent)
         .map(_.asInstanceOf[OptionDef[Unit, AppOption]])
         .foreach(scopedCheck(_))
+
+      _initialized = true
+    }
+
+    // abstract override def parse(args: Seq[String], initConf: AppOption): Option[AppOption] = {
+    def parseCommandLine(args: Seq[String]): Option[AppOption] = {
+      if (!_initialized) initialize
+
+      val initConf = Container("$")
+      initConf.put("_app", Value("$._app", self.programName))
 
       self.parse(args, initConf)
     }
