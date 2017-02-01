@@ -131,19 +131,23 @@ object AppOption {
           s"${parentPath}.${o.name}"
         }.getOrElse(s"non_exist_option($id)")
 
-      def withScope(parentId: Option[Int],
-                 f: AppOption => Either[String, Unit])(appOption: AppOption) = {
-        parentId.map { pid =>
-          val path = pathOf(pid)
-          cache.get(pid) map { scope =>
+
+      def scopedCheck(check: OptionDef[Unit, AppOption]) = {
+        val parentId = check.getParentId.get
+        val path = pathOf(parentId)
+        val scopedCheck = check.copy(_configValidations = Seq())
+
+        def withScope(f: AppOption => Either[String, Unit])(appOption: AppOption) =
+          cache.get(parentId) map { scope =>
             f(scope) match {
               case Right(_) => success
               case Left(msg) => failure(s"$path check failed: $msg")
             }
-          } getOrElse {
-            failure(s"Cannot find the option for the checkConfig of $path")
-          }
-        } getOrElse (f(appOption))
+          } getOrElse success
+
+        check.checks.foreach { f =>
+          scopedCheck.validateConfig(withScope(f) _)
+        }
       }
 
       // inject the action using the default function.
@@ -152,12 +156,7 @@ object AppOption {
       // replace a check's validatioin function using its parent's AppOption
       checks.filter(_.hasParent)
         .map(_.asInstanceOf[OptionDef[Unit, AppOption]])
-        .foreach { check =>
-          val scopedCheck = check.copy(_configValidations = Seq())
-          check.checks.foreach { f =>
-            scopedCheck.validateConfig(withScope(check.getParentId, f) _)
-          }
-        }
+        .foreach(scopedCheck(_))
 
       self.parse(args, initConf)
     }

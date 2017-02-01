@@ -93,6 +93,12 @@ class AppOptionParserSpec extends WordSpec with Matchers {
                 lowerLessThanUpper(cmdOpt.lower, cmdOpt.upper)
               }
             )
+
+          cmd("cmd_d")
+
+          checkConfig { appOpt =>
+            if (appOpt._cmd.exists) success else failure("No command is specified")
+          }
         }
       }
       "given arguments fail the check, should fail the parsing" in {
