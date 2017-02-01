@@ -149,7 +149,7 @@ object AppOption {
           } getOrElse success
 
         check.checks.foreach { f =>
-          scopedCheck.validateConfig(withScope(f) _)
+          scopedCheck.validateConfig(withScope(f))
         }
       }
 
