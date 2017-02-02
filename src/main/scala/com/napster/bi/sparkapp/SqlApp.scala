@@ -11,22 +11,24 @@ trait SqlApp extends LazyLogging {
 
   import SqlApp._
 
-  def appOptionHandler(appOption: AppOption): AppOptionHandler
+  def createDriver(appOption: AppOption): Driver = {
+    val plan = createDriverPlan(appOption)
 
-  def createDriver(appOpt: AppOption): Driver = {
-    val handler = appOptionHandler(appOpt)
-
-    val spark = sparkSession(handler.appNameGen)
+    val spark = sparkSession(plan.appName)
     initSql(spark)
 
-    handler.createDriver(spark)
+    val appConf = appConfig(appOption)
+
+    plan.createDriver(spark, appConf)
   }
+
+  def createDriverPlan(appOption: AppOption): CreateDriverPlan
 
   def parse(args: Array[String]): Option[AppOption]
 
-  def sparkSession(defaultAppName: => Option[String]): SparkSession = {
+  def sparkSession(appName: Option[String]): SparkSession = {
     val sparkConf = new SparkConf()
-    for (name <- sparkConf.getOption(SPARK_APP_NAME).orElse(defaultAppName)) {
+    for (name <- sparkConf.getOption(SPARK_APP_NAME).orElse(appName)) {
       sparkConf.set(SPARK_APP_NAME, name)
     }
 
@@ -75,11 +77,11 @@ object SqlApp {
 
   val SPARK_APP_NAME = "spark.app.name"
 
-  trait AppOptionHandler {
+  trait CreateDriverPlan {
 
-    def appNameGen: Option[String]
+    def appName: Option[String]
 
-    def createDriver(spark: SparkSession): Driver
+    def createDriver(spark: SparkSession, appConf: AppConfig): Driver
 
   }
 
