@@ -19,7 +19,7 @@ trait SqlApp extends LazyLogging {
 
     val appConf = appConfig(appOption)
 
-    plan.createDriver(spark, appConf)
+    plan.execute(spark, appConf)
   }
 
   def createDriverPlan(appOption: AppOption): CreateDriverPlan
@@ -81,7 +81,7 @@ object SqlApp {
 
     def appName: Option[String]
 
-    def createDriver(spark: SparkSession, appConf: AppConfig): Driver
+    def execute(spark: SparkSession, appConf: AppConfig): Driver
 
   }
 
