@@ -11,6 +11,8 @@ trait AppOption extends Dynamic {
 
   def as[T]: T
 
+  def get[T](default: T): T = asOption[T].getOrElse(default)
+
   def asOption[T]: Option[T]
 
   def exists: Boolean = true
