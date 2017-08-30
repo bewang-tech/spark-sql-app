@@ -16,28 +16,31 @@ class SingleDateOptionDefSpec extends WordSpec with Matchers {
 
       val testDate = new LocalDate("2017-01-01")
 
-      def parse(args: String*) = parser.parse(args, CmdLineOption())
-
-      implicit class ShouldDate(opt: Option[CmdLineOption]) {
-
-        def should_date_be(expected: Option[LocalDate]) = {
-          opt should not be (None)
-          opt.get.date should be(expected)
-        }
-
-      }
+      def parse(args: String*)(validate: CmdLineOption => Unit) =
+        parser.parse(args, CmdLineOption())
+          .map { opt =>
+            validate(opt)
+            succeed
+          }
+          .getOrElse(fail(s"Parsing ${args.mkString(",")} failed."))
 
       "return None" when {
         "-d or --date is not present" in {
-          parse() should_date_be None
+          parse() { opt =>
+            opt.date should be(None)
+          }
         }
       }
       "return the specified date" when {
         s"-d $testDate" in {
-          parse("-d", testDate.toString) should_date_be Some(testDate)
+          parse("-d", testDate.toString) { opt =>
+            opt.date should be(Some(testDate))
+          }
         }
         s"--date $testDate" in {
-          parse("--date", testDate.toString) should_date_be Some(testDate)
+          parse("--date", testDate.toString) { opt =>
+            opt.date should be(Some(testDate))
+          }
         }
       }
     }
