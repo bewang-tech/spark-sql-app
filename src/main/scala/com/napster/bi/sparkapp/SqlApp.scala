@@ -3,86 +3,64 @@ package com.napster.bi.sparkapp
 import com.napster.bi.config.AppConfig
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.slf4j.LazyLogging
-import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import scopt.AppOption
 
 trait SqlApp extends LazyLogging {
 
-  import SqlApp._
+  def createDriver(appOption: AppOption, appConf: AppConfig)(implicit spark: SparkSession): Driver
 
   def createDriver(appOption: AppOption): Driver = {
-    val plan = createDriverPlan(appOption)
+    val spark = sparkSession
 
-    val spark = sparkSession(plan.appName)
     initSql(spark)
 
     val appConf = appConfig(appOption)
 
-    plan.execute(appConf)(spark)
+    createDriver(appOption, appConf)(spark)
   }
-
-  def createDriverPlan(appOption: AppOption): CreateDriverPlan
 
   def parse(args: Array[String]): Option[AppOption]
 
-  def sparkSession(appName: Option[String]): SparkSession = {
-    val sparkConf = new SparkConf()
-    for (name <- sparkConf.getOption(SPARK_APP_NAME).orElse(appName)) {
-      sparkConf.set(SPARK_APP_NAME, name)
-    }
-
-    val spark = SparkSession.builder()
-      .config(sparkConf)
+  def sparkSession: SparkSession =
+    SparkSession.builder()
       .config("spark.sql.parquet.binaryAsString", "true")
       .enableHiveSupport()
       .getOrCreate()
-
-    spark
-  }
 
   def initSql(spark: SparkSession): Unit = {
     spark.sql("set parquet.compression=gzip")
     spark.sql("set hive.exec.dynamic.partition.mode=nonstrict")
   }
 
-  def appConfig(appOption: AppOption) = {
+  def appConfig(appOption: AppOption): AppConfig = {
     val config = appOption("app-conf").asOption[String]
       .map(confFile => ConfigFactory.load(confFile))
       .getOrElse(ConfigFactory.load())
     AppConfig(appOption._app, config)
   }
 
-  def main(args: Array[String]) = {
-    logger.info(s"The command line args: ${args.mkString(",")}")
+  def run(appOpt: AppOption): Unit = {
+    logger.info(s"Application option = $appOpt")
 
-    parse(args).map { appOpt =>
-      logger.info(s"Application option = ${appOpt}")
+    val driver = createDriver(appOpt)
 
-      val driver = createDriver(appOpt)
+    logger.info(s"Running $driver ...")
 
-      logger.info(s"Running $driver ...")
+    driver.run()
 
-      driver.run()
-
-      logger.info(s"$driver finished successfully!")
-    } getOrElse {
-      throw new IllegalArgumentException(s"Cannot parse command line: ${args.mkString(",")}")
-    }
+    logger.info(s"$driver finished successfully!")
   }
 
-}
+  def main(args: Array[String]): Unit = {
+    logger.info(s"The command line args: ${args.mkString(",")}")
 
-object SqlApp {
-
-  val SPARK_APP_NAME = "spark.app.name"
-
-  trait CreateDriverPlan {
-
-    def appName: Option[String]
-
-    def execute(appConf: AppConfig)(implicit spark: SparkSession): Driver
-
+    parse(args) match {
+      case Some(appOpt) =>
+        run(appOpt)
+      case None =>
+        throw new IllegalArgumentException(s"Cannot parse command line: ${args.mkString(",")}")
+    }
   }
 
 }
