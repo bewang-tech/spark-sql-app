@@ -21,34 +21,43 @@ class DateRangeOptionDefSpec extends WordSpec with Matchers {
       val testDate1 = new LocalDate("2017-01-01")
       val testDate2 = new LocalDate("2017-01-02")
 
-      def parse(args: String*) = parser.parse(args, CmdLineOption())
+      def parse(args: String*)(validate: CmdLineOption => Unit) =
+        parser.parse(args, CmdLineOption())
+          .map { opt =>
+            validate(opt)
+            succeed
+          }
+          .getOrElse(fail(s"Parsing ${args.mkString(",")} failed"))
 
       "no --from-date and --to-date, both are None" in {
-        val opt = parse()
-        opt should not be (None)
-        opt.get.fromDate should be(None)
-        opt.get.toDate should be(None)
+        parse() { opt =>
+          opt.fromDate should be(None)
+          opt.toDate should be(None)
+        }
       }
 
       s"only --from-date $testDate1 is present, toDate is None" in {
-        val opt = parse("--from-date", testDate1.toString())
-        opt should not be (None)
-        opt.get.fromDate should be(Some(testDate1))
-        opt.get.toDate should be(None)
+        parse("--from-date", testDate1.toString()) { opt =>
+          opt.fromDate should be(Some(testDate1))
+          opt.toDate should be(None)
+        }
       }
 
       s"only --to-date $testDate2 is present, fromDate is None" in {
-        val opt = parse("--to-date", testDate2.toString())
-        opt should not be (None)
-        opt.get.fromDate should be(None)
-        opt.get.toDate should be(Some(testDate2))
+        parse("--to-date", testDate2.toString()) { opt =>
+          opt.fromDate should be(None)
+          opt.toDate should be(Some(testDate2))
+        }
       }
 
       s"--from-date $testDate1 --to-date $testDate2" in {
-        val opt = parse("--from-date", testDate1.toString, "--to-date", testDate2.toString())
-        opt should not be (None)
-        opt.get.fromDate should be(Some(testDate1))
-        opt.get.toDate should be(Some(testDate2))
+        parse(
+          "--from-date", testDate1.toString,
+          "--to-date", testDate2.toString()
+        ) { opt =>
+          opt.fromDate should be(Some(testDate1))
+          opt.toDate should be(Some(testDate2))
+        }
       }
     }
   }
