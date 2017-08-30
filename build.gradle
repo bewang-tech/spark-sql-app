@@ -50,7 +50,7 @@ dependencies {
     compile "joda-time:joda-time:2.9.3"
     compile "org.joda:joda-convert:1.8.1"
 
-    compile "com.napster.bi:app-config:2.0.+"
+    compile "com.napster.bi:app-config:2.1.+"
 
     compile "com.google.guava:guava:16.0.1"
 
@@ -84,7 +84,10 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
 }
 
-task wrapper(type: Wrapper) { gradleVersion = "3.3" }
+task wrapper(type: Wrapper) {
+    gradleVersion = "3.3"
+    distributionType = "ALL"
+}
 
 publishing {
     repositories {
