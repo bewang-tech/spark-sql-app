@@ -27,7 +27,7 @@ class AppOptionParserSpec extends WordSpec with Matchers {
         val parser = defaultParser
 
         parse() { appOption =>
-          appOption._app.as[String] should be("testapp")
+          appOption._app.as[String] should be("test-program")
         }
       }
     }
