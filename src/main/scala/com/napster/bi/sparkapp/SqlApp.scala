@@ -8,19 +8,7 @@ import scopt.AppOption
 
 trait SqlApp extends LazyLogging {
 
-  import SqlApp._
-
-  def driverFactory: DriverFactory
-
-  def createDriver(appOption: AppOption): Driver = {
-    val spark = sparkSession
-
-    initSql(spark)
-
-    val appConf = appConfig(appOption)
-
-    driverFactory.create(appOption, appConf)(spark)
-  }
+  def createDriver(appOption: AppOption, appConf: AppConfig)(implicit spark: SparkSession): Driver
 
   def parse(args: Array[String]): Option[AppOption]
 
@@ -45,7 +33,13 @@ trait SqlApp extends LazyLogging {
   def run(appOpt: AppOption): Unit = {
     logger.info(s"Application option = $appOpt")
 
-    val driver = createDriver(appOpt)
+    val spark = sparkSession
+
+    initSql(spark)
+
+    val appConf = appConfig(appOpt)
+
+    val driver = createDriver(appOpt, appConf)(spark)
 
     logger.info(s"Running $driver ...")
 
@@ -63,14 +57,6 @@ trait SqlApp extends LazyLogging {
       case None =>
         throw new IllegalArgumentException(s"Cannot parse command line: ${args.mkString(",")}")
     }
-  }
-
-}
-
-object SqlApp {
-
-  trait DriverFactory {
-    def create(opt: AppOption, conf: AppConfig)(implicit spark: SparkSession): Driver
   }
 
 }
