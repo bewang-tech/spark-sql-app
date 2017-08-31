@@ -2,7 +2,7 @@ package scopt
 
 import org.joda.time.LocalDate
 
-import scala.language.dynamics
+import scala.language.{dynamics, implicitConversions}
 
 trait AppOption extends Dynamic {
   def path: String
@@ -25,22 +25,22 @@ object AppOption {
 
   case class Value(path: String, value: Any) extends AppOption {
 
-    def as[T] = value.asInstanceOf[T]
+    override def as[T]: T = value.asInstanceOf[T]
 
-    def asOption[T] = Some(as[T])
+    override def asOption[T]: Option[T] = Some(as[T])
 
     override def apply(name: String): AppOption =
-      throw new UnsupportedOperationException(s"${path} is a value.")
+      throw new UnsupportedOperationException(s"$path is a value.")
 
-    override def toString = value.toString
+    override def toString: String = value.toString
 
   }
 
   case class NonExistValue(path: String) extends AppOption {
-    def as[T] =
+    override def as[T]: T =
       throw new NoSuchElementException(s"$path doesn't exist")
 
-    def asOption[T] = None
+    override def asOption[T] = None
 
     override def exists = false
 
@@ -54,35 +54,35 @@ object AppOption {
 
     private[this] val _options = collection.mutable.Map[String, AppOption]()
 
-    def as[T] =
+    override def as[T]: T =
       throw new UnsupportedOperationException(s"$path is not a value.")
 
-    def asOption[T] = as[T]
+    override def asOption[T]: Option[T] =
+      throw new UnsupportedOperationException(s"$path is not a value.")
 
-    def put(name: String, value: AppOption) =
+    def put(name: String, value: AppOption): Option[AppOption] =
       _options.put(name, value)
 
     override def apply(name: String): AppOption =
-      _options.getOrElse(name, NonExistValue(s"${path}.${name}"))
+      _options.getOrElse(name, NonExistValue(s"$path.$name"))
 
-    override def toString = _options.toString
+    override def toString: String = _options.toString
 
   }
 
-  implicit def node2Int(nd: AppOption) = nd.as[Int]
+  implicit def node2Int(nd: AppOption):Int = nd.as[Int]
 
-  implicit def node2String(nd: AppOption) = nd.as[String]
+  implicit def node2String(nd: AppOption): String = nd.as[String]
 
-  implicit def node2Boolean(nd: AppOption) = nd.as[Boolean]
+  implicit def node2Boolean(nd: AppOption): Boolean = nd.as[Boolean]
 
-  implicit def node2LocalDate(nd: AppOption) = nd.as[LocalDate]
+  implicit def node2LocalDate(nd: AppOption): LocalDate = nd.as[LocalDate]
 
   /**
     * This trait enable an app use AppOption to save the config from the command line
     * so that an app does not have to define its own config case class.
     */
-  trait Parser {
-    self: scopt.OptionParser[AppOption] =>
+  abstract class Parser(programName: String) extends scopt.OptionParser[AppOption](programName) {
 
     opt[String]("app-conf")
       .valueName("<config-file-name>")
@@ -90,18 +90,18 @@ object AppOption {
 
     help("help").text("print this usage")
 
-    val cache = collection.mutable.Map[Int, AppOption]()
+    private[this] val cache = collection.mutable.Map[Int, AppOption]()
 
-    def pathOf(id: Int): String =
+    protected def pathOf(id: Int): String =
       options.find(_.id == id).map { o =>
         val parentPath = o.getParentId.map(parentId => pathOf(parentId)).getOrElse("$")
-        s"${parentPath}.${o.name}"
+        s"$parentPath.${o.name}"
       }.getOrElse(s"non_exist_option($id)")
 
-    def scopedCheck(check: OptionDef[Unit, AppOption]) = {
+    protected def addScopedCheck(check: OptionDef[Unit, AppOption]): Unit = {
       val parentId = check.getParentId.get
       val path = pathOf(parentId)
-      val scopedCheck = check.copy(_configValidations = Seq())
+      val checkOfScope = check.copy(_configValidations = Seq())
 
       def withScope(f: AppOption => Either[String, Unit])(appOption: AppOption) =
         cache.get(parentId) map { scope =>
@@ -112,12 +112,12 @@ object AppOption {
         } getOrElse success
 
       check.checks.foreach { f =>
-        scopedCheck.validateConfig(withScope(f))
+        checkOfScope.validateConfig(withScope(f))
       }
     }
 
     // default action: save the option value into AppOption
-    def save(o: OptionDef[_, AppOption])(x: Any, root: AppOption) = {
+    protected def save(o: OptionDef[_, AppOption])(x: Any, root: AppOption): AppOption = {
       val c = containerOf(o).getOrElse(root).asInstanceOf[Container]
       val childPath = s"${c.path}.${o.name}"
       if (o.kind == Cmd) {
@@ -142,35 +142,35 @@ object AppOption {
       * The container is in the cache keyed by the parent id of the OptionDef.
       * If no parent, the option is in the top level, return initConf
       * */
-    def containerOf(o: OptionDef[_, AppOption]): Option[AppOption] =
+    protected def containerOf(o: OptionDef[_, AppOption]): Option[AppOption] =
       o.getParentId.flatMap(pid => cache.get(pid))
 
-    def mustHaveCommand(appOption: AppOption) =
+    protected def mustHaveCommand(appOption: AppOption): Either[String, Unit] =
       if (appOption._cmd.exists) success else failure("No command is specified.")
 
     private[this] var _initialized = false
 
-    def initialize = {
+    protected def initialize(): Unit = {
       // inject the action using the default function.
       options.filter(o => o.kind == Opt || o.kind == Cmd)
-        .foreach(o => o.action(save(o) _))
+        .foreach(o => o.action(save(o)))
 
       // replace a check's validatioin function using its parent's AppOption
       checks.filter(_.hasParent)
         .map(_.asInstanceOf[OptionDef[Unit, AppOption]])
-        .foreach(scopedCheck(_))
+        .foreach(addScopedCheck)
 
       _initialized = true
     }
 
     // abstract override def parse(args: Seq[String], initConf: AppOption): Option[AppOption] = {
     def parseCommandLine(args: Seq[String]): Option[AppOption] = {
-      if (!_initialized) initialize
+      if (!_initialized) initialize()
 
       val initConf = Container("$")
-      initConf.put("_app", Value("$._app", self.programName))
+      initConf.put("_app", Value("$._app", programName))
 
-      self.parse(args, initConf)
+      parse(args, initConf)
     }
 
   }
