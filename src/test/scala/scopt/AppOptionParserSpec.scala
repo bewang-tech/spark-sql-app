@@ -5,17 +5,18 @@ import org.scalatest.{Matchers, WordSpec}
 class AppOptionParserSpec extends WordSpec with Matchers {
 
   trait Test {
-    val defaultParser = new scopt.OptionParser[AppOption]("testapp") with AppOption.Parser
+    val defaultParser = new AppOption.Parser("test-program") {}
 
     val parser: AppOption.Parser
 
     def appOptionOf(args: String*) = parser.parseCommandLine(args)
 
     def parse(args: String*)(validate: AppOption => Unit) =
-      appOptionOf(args: _*).map { appOption =>
-        validate(appOption)
-      } orElse {
-        fail(s"failed to parse the arguments '${args.mkString(" ")}")
+      appOptionOf(args: _*) match {
+        case Some(appOption) =>
+          validate(appOption)
+        case None =>
+          fail(s"failed to parse the arguments '${args.mkString(",")}")
       }
 
   }
@@ -53,8 +54,8 @@ class AppOptionParserSpec extends WordSpec with Matchers {
     "allow to retrieve the option value" which {
       "is a global option" in {
         new Test {
-          val parser = new scopt.OptionParser[AppOption]("testapp") with AppOption.Parser {
-            opt[Int]('d', "data") valueName ("<int>") text "integer data"
+          val parser = new AppOption.Parser("test-app") {
+            opt[Int]('d', "data") valueName "<int>" text "integer data"
           }
 
           parse("--data", "15") { appOption =>
@@ -64,11 +65,11 @@ class AppOptionParserSpec extends WordSpec with Matchers {
       }
       "is a command option" in {
         new Test {
-          val parser = new scopt.OptionParser[AppOption]("testapp") with AppOption.Parser {
+          val parser = new AppOption.Parser("test-app") {
             cmd("cmd_a")
               .text("do something about a")
               .children(
-                opt[Int]('d', "data") valueName ("<int>") text "cmd_a integer data"
+                opt[Int]('d', "data") valueName "<int>" text "cmd_a integer data"
               )
           }
 
@@ -80,12 +81,12 @@ class AppOptionParserSpec extends WordSpec with Matchers {
     }
     "allow a command's checkConfig using relative AppOption to the command" when {
       trait FailureTest extends Test {
-        val parser = new scopt.OptionParser[AppOption]("testapp") with AppOption.Parser {
+        val parser = new AppOption.Parser("test-app") {
           cmd("cmd_c")
             .text("do something about c")
             .children(
-              opt[Int]("lower") valueName ("<int>") text "lower bound",
-              opt[Int]("upper") valueName ("<int>") text "upper bound")
+              opt[Int]("lower") valueName "<int>" text "lower bound",
+              opt[Int]("upper") valueName "<int>" text "upper bound")
             .children(
               checkConfig { cmdOpt =>
                 def lowerLessThanUpper(lower: Int, upper: Int) =
