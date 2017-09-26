@@ -1,7 +1,9 @@
 package com.napster.bi.sparkapp
 
+import com.napster.bi.config.AppConfig
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.apache.spark.sql.SparkSession
+import scopt.AppOption
 
 trait Driver extends LazyLogging {
 
@@ -11,20 +13,14 @@ trait Driver extends LazyLogging {
 
 object Driver {
 
-  type Factory = SparkSession => Driver
+  trait Request
 
-  /**
-    * Return a factory which creates a Driver running the specified function
-    *
-    * @param f the driver's run function.
-    * @return the factory create the driver.
-    */
-  def run(f: SparkSession => Unit): Factory = { spark: SparkSession =>
+  trait RequestFactory {
+    def apply(appOpt: AppOption, appConf: AppConfig): Request
+  }
 
-    new Driver {
-      override def run(): Unit = f(spark)
-    }
-
+  trait Factory {
+    def apply(request: Request)(implicit spark: SparkSession): Driver
   }
 
 }
