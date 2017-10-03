@@ -13,6 +13,8 @@ class SeqDriver(drivers: Seq[Driver]) extends Driver {
       driver.run()
     }
 
+  override def toString: String = s"SeqDriver(n=${drivers.size})"
+
 }
 
 object SeqDriver {
