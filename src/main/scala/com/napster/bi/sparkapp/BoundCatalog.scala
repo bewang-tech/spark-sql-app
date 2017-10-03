@@ -13,17 +13,21 @@ trait BoundCatalog {
 
 class ConfigBoundCatalog(config: Config)(implicit spark: SparkSession) extends BoundCatalog {
 
-  override def tableName(alias: String) = config.getString(alias)
+  override def tableName(alias: String): String =
+    if (config.hasPath(alias)) config.getString(alias) else alias
 
-  override def readTable(alias: String) = spark.read.table(tableName(alias))
+  override def readTable(alias: String): DataFrame =
+    spark.read.table(tableName(alias))
 
 }
 
 class MapBoundCatalog(tableMap: Map[String, String])(implicit spark: SparkSession) extends BoundCatalog {
 
-  override def tableName(alias: String) = tableMap(alias)
+  override def tableName(alias: String): String =
+    tableMap.getOrElse(alias, alias)
 
-  override def readTable(alias: String) = spark.read.table(tableName(alias))
+  override def readTable(alias: String): DataFrame =
+    spark.read.table(tableName(alias))
 
 }
 
