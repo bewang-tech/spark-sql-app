@@ -9,8 +9,7 @@
             "requested": "16.0.1"
         },
         "com.napster.bi:app-config": {
-            "locked": "2.1.0-3-g2bc8d2b",
-            "requested": "2.1.+"
+            "project": true
         },
         "com.typesafe.scala-logging:scala-logging-api_2.11": {
             "locked": "2.1.2",
@@ -19,6 +18,12 @@
         "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
             "locked": "2.1.2",
             "requested": "2.1.2"
+        },
+        "com.typesafe:config": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "1.2.1"
         },
         "joda-time:joda-time": {
             "locked": "2.9.3",
@@ -31,6 +36,18 @@
         "org.joda:joda-convert": {
             "locked": "1.8.1",
             "requested": "1.8.1"
+        },
+        "org.scala-lang:scala-library": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
+        },
+        "org.scala-lang:scala-reflect": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
         }
     },
     "compileClasspath": {
@@ -43,8 +60,7 @@
             "requested": "16.0.1"
         },
         "com.napster.bi:app-config": {
-            "locked": "2.1.0-3-g2bc8d2b",
-            "requested": "2.1.+"
+            "project": true
         },
         "com.typesafe.scala-logging:scala-logging-api_2.11": {
             "locked": "2.1.2",
@@ -53,6 +69,12 @@
         "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
             "locked": "2.1.2",
             "requested": "2.1.2"
+        },
+        "com.typesafe:config": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "1.2.1"
         },
         "joda-time:joda-time": {
             "locked": "2.9.3",
@@ -65,6 +87,18 @@
         "org.joda:joda-convert": {
             "locked": "1.8.1",
             "requested": "1.8.1"
+        },
+        "org.scala-lang:scala-library": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
+        },
+        "org.scala-lang:scala-reflect": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
         }
     },
     "compileOnly": {
@@ -77,8 +111,7 @@
             "requested": "16.0.1"
         },
         "com.napster.bi:app-config": {
-            "locked": "2.1.0-3-g2bc8d2b",
-            "requested": "2.1.+"
+            "project": true
         },
         "com.typesafe.scala-logging:scala-logging-api_2.11": {
             "locked": "2.1.2",
@@ -87,6 +120,12 @@
         "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
             "locked": "2.1.2",
             "requested": "2.1.2"
+        },
+        "com.typesafe:config": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "1.2.1"
         },
         "joda-time:joda-time": {
             "locked": "2.9.3",
@@ -99,6 +138,18 @@
         "org.joda:joda-convert": {
             "locked": "1.8.1",
             "requested": "1.8.1"
+        },
+        "org.scala-lang:scala-library": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
+        },
+        "org.scala-lang:scala-reflect": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
         }
     },
     "default": {
@@ -111,8 +162,7 @@
             "requested": "16.0.1"
         },
         "com.napster.bi:app-config": {
-            "locked": "2.1.0-3-g2bc8d2b",
-            "requested": "2.1.+"
+            "project": true
         },
         "com.typesafe.scala-logging:scala-logging-api_2.11": {
             "locked": "2.1.2",
@@ -121,6 +171,12 @@
         "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
             "locked": "2.1.2",
             "requested": "2.1.2"
+        },
+        "com.typesafe:config": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "1.2.1"
         },
         "joda-time:joda-time": {
             "locked": "2.9.3",
@@ -133,6 +189,18 @@
         "org.joda:joda-convert": {
             "locked": "1.8.1",
             "requested": "1.8.1"
+        },
+        "org.scala-lang:scala-library": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
+        },
+        "org.scala-lang:scala-reflect": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
         }
     },
     "provided": {
@@ -151,8 +219,7 @@
             "requested": "16.0.1"
         },
         "com.napster.bi:app-config": {
-            "locked": "2.1.0-3-g2bc8d2b",
-            "requested": "2.1.+"
+            "project": true
         },
         "com.typesafe.scala-logging:scala-logging-api_2.11": {
             "locked": "2.1.2",
@@ -161,6 +228,12 @@
         "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
             "locked": "2.1.2",
             "requested": "2.1.2"
+        },
+        "com.typesafe:config": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "1.2.1"
         },
         "joda-time:joda-time": {
             "locked": "2.9.3",
@@ -173,6 +246,18 @@
         "org.joda:joda-convert": {
             "locked": "1.8.1",
             "requested": "1.8.1"
+        },
+        "org.scala-lang:scala-library": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
+        },
+        "org.scala-lang:scala-reflect": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
         }
     },
     "testCompile": {
@@ -185,8 +270,7 @@
             "requested": "16.0.1"
         },
         "com.napster.bi:app-config": {
-            "locked": "2.1.0-3-g2bc8d2b",
-            "requested": "2.1.+"
+            "project": true
         },
         "com.typesafe.scala-logging:scala-logging-api_2.11": {
             "locked": "2.1.2",
@@ -195,6 +279,12 @@
         "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
             "locked": "2.1.2",
             "requested": "2.1.2"
+        },
+        "com.typesafe:config": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "1.2.1"
         },
         "joda-time:joda-time": {
             "locked": "2.9.3",
@@ -207,6 +297,18 @@
         "org.joda:joda-convert": {
             "locked": "1.8.1",
             "requested": "1.8.1"
+        },
+        "org.scala-lang:scala-library": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
+        },
+        "org.scala-lang:scala-reflect": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
         },
         "org.scalacheck:scalacheck_2.11": {
             "locked": "1.13.4",
@@ -227,8 +329,7 @@
             "requested": "16.0.1"
         },
         "com.napster.bi:app-config": {
-            "locked": "2.1.0-3-g2bc8d2b",
-            "requested": "2.1.+"
+            "project": true
         },
         "com.typesafe.scala-logging:scala-logging-api_2.11": {
             "locked": "2.1.2",
@@ -237,6 +338,12 @@
         "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
             "locked": "2.1.2",
             "requested": "2.1.2"
+        },
+        "com.typesafe:config": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "1.2.1"
         },
         "joda-time:joda-time": {
             "locked": "2.9.3",
@@ -249,6 +356,18 @@
         "org.joda:joda-convert": {
             "locked": "1.8.1",
             "requested": "1.8.1"
+        },
+        "org.scala-lang:scala-library": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
+        },
+        "org.scala-lang:scala-reflect": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
         },
         "org.scalacheck:scalacheck_2.11": {
             "locked": "1.13.4",
@@ -269,8 +388,7 @@
             "requested": "16.0.1"
         },
         "com.napster.bi:app-config": {
-            "locked": "2.1.0-3-g2bc8d2b",
-            "requested": "2.1.+"
+            "project": true
         },
         "com.typesafe.scala-logging:scala-logging-api_2.11": {
             "locked": "2.1.2",
@@ -279,6 +397,12 @@
         "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
             "locked": "2.1.2",
             "requested": "2.1.2"
+        },
+        "com.typesafe:config": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "1.2.1"
         },
         "joda-time:joda-time": {
             "locked": "2.9.3",
@@ -291,6 +415,18 @@
         "org.joda:joda-convert": {
             "locked": "1.8.1",
             "requested": "1.8.1"
+        },
+        "org.scala-lang:scala-library": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
+        },
+        "org.scala-lang:scala-reflect": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
         },
         "org.scalacheck:scalacheck_2.11": {
             "locked": "1.13.4",
@@ -311,8 +447,7 @@
             "requested": "16.0.1"
         },
         "com.napster.bi:app-config": {
-            "locked": "2.1.0-3-g2bc8d2b",
-            "requested": "2.1.+"
+            "project": true
         },
         "com.typesafe.scala-logging:scala-logging-api_2.11": {
             "locked": "2.1.2",
@@ -321,6 +456,12 @@
         "com.typesafe.scala-logging:scala-logging-slf4j_2.11": {
             "locked": "2.1.2",
             "requested": "2.1.2"
+        },
+        "com.typesafe:config": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "1.2.1"
         },
         "joda-time:joda-time": {
             "locked": "2.9.3",
@@ -337,6 +478,18 @@
         "org.pegdown:pegdown": {
             "locked": "1.4.2",
             "requested": "1.4.2"
+        },
+        "org.scala-lang:scala-library": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
+        },
+        "org.scala-lang:scala-reflect": {
+            "firstLevelTransitive": [
+                "com.napster.bi:app-config"
+            ],
+            "locked": "2.11.8"
         },
         "org.scalacheck:scalacheck_2.11": {
             "locked": "1.13.4",
