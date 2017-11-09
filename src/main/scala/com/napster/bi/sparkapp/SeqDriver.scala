@@ -21,4 +21,7 @@ object SeqDriver {
 
   def apply(drivers: Driver*): Driver = new SeqDriver(drivers)
 
+  implicit def toSeqDriver(drivers: Seq[Driver]): SeqDriver =
+    new SeqDriver(drivers)
+
 }
